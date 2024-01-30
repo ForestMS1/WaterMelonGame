@@ -356,6 +356,9 @@ MonoBehaviour:
   lastDongle: {fileID: 0}
   donglePrefab: {fileID: 8637818272643718611, guid: 009b70f00764dce4fa1d33c54fb646e7, type: 3}
   dongleGroup: {fileID: 248916531}
+  effectPrefab: {fileID: 5987460222256786229, guid: 36ac0b557d285db4e910d4751d45d7fa, type: 3}
+  effectGroup: {fileID: 1544352105}
+  maxLevel: 2
 --- !u!4 &343433847
 Transform:
   m_ObjectHideFlags: 0
@@ -861,6 +864,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1544352104
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1544352105}
+  m_Layer: 0
+  m_Name: EffectGroup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1544352105
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544352104}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1563080837
 GameObject:
   m_ObjectHideFlags: 0
@@ -1315,6 +1349,7 @@ SceneRoots:
   - {fileID: 519420032}
   - {fileID: 836538478}
   - {fileID: 248916531}
+  - {fileID: 1544352105}
   - {fileID: 213297372}
   - {fileID: 306548155}
   - {fileID: 1563080840}

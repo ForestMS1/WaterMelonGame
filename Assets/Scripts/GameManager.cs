@@ -7,8 +7,15 @@ public class GameManager : MonoBehaviour
     public Dongle lastDongle;
     public GameObject donglePrefab;
     public Transform dongleGroup;
+    public GameObject effectPrefab;
+    public Transform effectGroup;
+    public int maxLevel;
 
 
+    void Awake()
+    {
+        Application.targetFrameRate = 60; //targetFrameRate : 프레임(FPS) 설정 속성
+    }
     void Start()
     {
         NextDongle();
@@ -17,8 +24,14 @@ public class GameManager : MonoBehaviour
 
     Dongle GetDongle()
     {
-        GameObject instant = Instantiate(donglePrefab, dongleGroup); //Instantiate() -> 오브젝트를 새로 생성해주는 함수
-        Dongle instantDongle =  instant.GetComponent<Dongle>(); //Dongle c# 스크립트는 컴포넌트로 등록이 되어있는상태
+        //이펙트생성
+        GameObject instantEffectObj = Instantiate(effectPrefab, effectGroup);
+        ParticleSystem instantEffect =  instantEffectObj.GetComponent<ParticleSystem>();
+
+        //동글 생성
+        GameObject instantDongleObj = Instantiate(donglePrefab, dongleGroup); //Instantiate() -> 오브젝트를 새로 생성해주는 함수
+        Dongle instantDongle =  instantDongleObj.GetComponent<Dongle>(); //Dongle c# 스크립트는 컴포넌트로 등록이 되어있는상태
+        instantDongle.effect = instantEffect;
         return instantDongle;
     }
 
@@ -26,6 +39,9 @@ public class GameManager : MonoBehaviour
     {
         Dongle newDongle = GetDongle();
         lastDongle = newDongle;
+        lastDongle.manager = this;
+        lastDongle.level = Random.Range(0,maxLevel); //0~7까지
+        lastDongle.gameObject.SetActive(true); //SetActive => 오브젝트 활성화 함수 -> Dongle의 OnEnable사용
 
         StartCoroutine("WaitNext"); //코루틴을 호출하는법 StartCoroutine(WaitNext())도 가능
     }
