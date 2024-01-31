@@ -10,6 +10,7 @@ public class Dongle : MonoBehaviour
     public int level;
     public bool isDrag;
     public bool isMerge; //합칠 때 다른 동글이 개입하지 않도록 잠금역할 해주는 변수 추가
+    public bool isAttach;
     public Rigidbody2D rigid;
     CircleCollider2D circle;
     Animator anim;
@@ -28,6 +29,26 @@ public class Dongle : MonoBehaviour
     private void OnEnable() //OnEnable : 스크립트가 활성화 될 때 실행되는 이벤트함수 //오브젝트가 생성이되거나 활성화될때 자동으로 실행이되는 이벤트함수
     {
         anim.SetInteger("Level", level);
+    }
+
+    private void OnDisable() //OnDisable : 비활성화 시 호출되는 이벤트함수
+    { 
+        //동글 속성 초기화
+        level = 0;
+        isDrag = false;
+        isMerge = false;
+        isAttach = false;
+
+        //동글 트랜스폼 초기화
+        transform.localPosition = Vector3.zero; //DongleGroup안에 들어가있기때문에 localPosition
+        transform.localRotation = Quaternion.identity;
+        transform.localScale = Vector3.zero;
+
+        //동글 물리 초기화
+        rigid.simulated = false;
+        rigid.velocity = Vector2.zero;
+        rigid.angularVelocity = 0;
+        circle.enabled = true;
     }
     void Update()
     {
@@ -65,6 +86,28 @@ public class Dongle : MonoBehaviour
     {
         isDrag = false;
         rigid.simulated = true; //물리현상적용 -> 자유낙하
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag != "SideWall")
+        {
+            StartCoroutine("AttachRoutine");
+        }
+    }
+
+    IEnumerator AttachRoutine()
+    {
+        if(isAttach)
+        {
+            yield break; //코루틴을 탈출하는 키워드는 yield break
+        }
+        isAttach = true;
+        manager.SfxPlay(GameManager.Sfx.Attach);
+
+        yield return new WaitForSeconds(0.2f);
+
+        isAttach = false;
     }
 
     void OnCollisionStay2D(Collision2D collision) //OnCollisionStay2D : 물리적 충돌 중일 때 계속 실행되는 함수
@@ -149,6 +192,7 @@ public class Dongle : MonoBehaviour
 
         anim.SetInteger("Level", level+1);
         EffectPlay();
+        manager.SfxPlay(GameManager.Sfx.LevelUp);
 
         yield return new WaitForSeconds(0.3f);
 

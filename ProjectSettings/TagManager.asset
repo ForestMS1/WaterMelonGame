@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Dongle
+  - SideWall
   layers:
   - Default
   - TransparentFX
