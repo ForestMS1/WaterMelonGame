@@ -10,15 +10,19 @@ public class Dongle : MonoBehaviour
     public int level;
     public bool isDrag;
     public bool isMerge; //합칠 때 다른 동글이 개입하지 않도록 잠금역할 해주는 변수 추가
-    Rigidbody2D rigid;
+    public Rigidbody2D rigid;
     CircleCollider2D circle;
     Animator anim;
+    SpriteRenderer spriteRenderer;
+
+    float deadTime;
 
     public void Awake()
     {
         rigid = GetComponent<Rigidbody2D>(); //컴포넌트 가져옴
         anim = GetComponent<Animator>();
         circle = GetComponent<CircleCollider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void OnEnable() //OnEnable : 스크립트가 활성화 될 때 실행되는 이벤트함수 //오브젝트가 생성이되거나 활성화될때 자동으로 실행이되는 이벤트함수
@@ -97,6 +101,11 @@ public class Dongle : MonoBehaviour
         rigid.simulated = false;
         circle.enabled = false;
 
+        if(targetPos == Vector3.up * 100)
+        {
+            EffectPlay();
+        }
+
         StartCoroutine(HideRoutine(targetPos));
     }
 
@@ -107,9 +116,19 @@ public class Dongle : MonoBehaviour
         while(frameCount < 20)
         {
             frameCount++;
-            transform.position = Vector3.Lerp(transform.position, targetPos, 0.5f);
-            yield return null;
+            if(targetPos != Vector3.up * 100)
+            {
+                transform.position = Vector3.Lerp(transform.position, targetPos, 0.6f);
+                yield return null;
+            }
+            else if(targetPos == Vector3.up * 100) //게임오버될때 호출
+            {
+                transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, 0.2f);
+            }
+            
         }
+
+        manager.score += (int)Mathf.Pow(2, level);
 
         isMerge = false;
         gameObject.SetActive(false);
@@ -138,6 +157,32 @@ public class Dongle : MonoBehaviour
         manager.maxLevel = Mathf.Max(level, manager.maxLevel);
 
         isMerge = false;
+    }
+
+    void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.tag == "Finish")
+        {
+            deadTime += Time.deltaTime;
+
+            if(deadTime > 2)
+            {
+                spriteRenderer.color = new Color(0.7f, 0.2f, 0.2f);
+            }
+            if(deadTime > 5)
+            {
+                manager.GmaeOver();
+            }
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.tag == "Finish")
+        {
+            deadTime = 0;
+            spriteRenderer.color = Color.white;
+        }
     }
 
     void EffectPlay() //파티클 위치와 크기를 보정해주는 함수 생성

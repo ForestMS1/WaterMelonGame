@@ -9,7 +9,9 @@ public class GameManager : MonoBehaviour
     public Transform dongleGroup;
     public GameObject effectPrefab;
     public Transform effectGroup;
+    public int score;
     public int maxLevel;
+    public bool isOver;
 
 
     void Awake()
@@ -37,6 +39,11 @@ public class GameManager : MonoBehaviour
 
     void NextDongle()
     {
+        if(isOver)
+        {
+            return;
+        }
+
         Dongle newDongle = GetDongle();
         lastDongle = newDongle;
         lastDongle.manager = this;
@@ -79,5 +86,36 @@ public class GameManager : MonoBehaviour
         }
         lastDongle.Drop();
         lastDongle = null; //터치를 끝내면 손에서 벗어남
+    }
+
+    public void GmaeOver() //게임매니저에서 게임오버 함수 선언 후 동글에서 호출
+    {
+        if(isOver)
+        {
+            return;
+        }
+        isOver = true;
+
+        StartCoroutine("GameOverRoutine");
+        
+    }
+
+    IEnumerator GameOverRoutine()
+    {
+        //1.장면 안에 활성화 되어있는 모든 동글 가져오기
+        Dongle[] dongles = GameObject.FindObjectsOfType<Dongle>();//FindObjectsOfType<T> : 장면에 올라온 T 컴포넌트들을 탐색 //Dongle 스크립트를 컴포넌트로 가지고있는것들을 전부 찾음
+
+        //2. 지우기 전에 모든 동글의 물리효과 비활성화
+        for(int index = 0; index < dongles.Length; index++)
+        {
+            dongles[index].rigid.simulated = false;
+        }
+
+        //3. 1번의 목록을 하나씩 접근해서 지우기
+        for(int index = 0; index < dongles.Length; index++)
+        {
+            dongles[index].Hide(Vector3.up * 100); //게임플레이 중에는 나올 수 없는 큰 값을 전달하여 숨기기
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 }
